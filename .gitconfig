@@ -1,0 +1,9 @@
+[user]
+	name = Garrett Davis
+	email = me@garrettdavis.dev
+[init]
+	defaultbranch = main
+[credential]
+	helper = osxkeychain
+[credential "https://github.com"]
+	username = Gardego5
