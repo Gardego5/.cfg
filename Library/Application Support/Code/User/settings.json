@@ -1,0 +1,13 @@
+{
+    "sqldeveloper.sqlHistory.historyLimit": 500,
+    "workbench.colorTheme": "Catppuccin Mocha",
+    "workbench.iconTheme": "catppuccin-mocha",
+    "editor.fontFamily": "'IosevkaTerm Nerd Font Mono', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontSize": 14,
+    "editor.aiStats.enabled": true,
+    "bruno.defaultCollectionLocation": "~/.collections",
+    "github.copilot.chat.agent.thinkingTool": true,
+    "github.copilot.chat.codesearch.enabled": true,
+    "sqldeveloper.telemetry.enabled": false,
+    "github.copilot.nextEditSuggestions.enabled": true
+}

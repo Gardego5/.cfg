@@ -1,5 +1,9 @@
 require 'socket'
 
+hostname = Socket.gethostname
+
+tap "finestructure/Hummingbird"
+
 brew "asdf"
 brew "awscli"
 brew "fzf"
@@ -12,14 +16,24 @@ brew "tmux"
 brew "wget"
 brew "httpie"
 
-cask "ghostty"
+# fonts
+cask "font-iosevka-term-nerd-font"
 
+# apps
+cask "bruno"
+cask "finestructure/hummingbird/hummingbird"
+cask "ghostty"
 cask "visual-studio-code"
 
-tap "finestructure/Hummingbird"
-cask "finestructure/hummingbird/hummingbird"
+vscode "bruno-api-client.bruno"
+vscode "catppuccin.catppuccin-vsc"
+vscode "catppuccin.catppuccin-vsc-icons"
+vscode "github.copilot"
+vscode "github.copilot-chat"
+vscode "redhat.java"
+vscode "vscjava.vscode-lombok"
 
-if ['robinbook'].include? Socket.gethostname
+if ["robinbook"].include? hostname
   mas "AdGuard for Safari", id: 1440147259
   mas "Bitwarden", id: 1352778147
   mas "Dark Reader for Safari", id: 1438243180
@@ -31,4 +45,8 @@ if ['robinbook'].include? Socket.gethostname
   mas "Pages", id: 409201541
   mas "Surfshark VPN: stable & fast", id: 1437809329
   mas "WhatsApp Messenger", id: 310633997
+end
+
+if ['USPHXUMN0WQ33LG'].include? hostname
+  vscode "oracle.sql-developer"
 end

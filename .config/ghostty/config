@@ -2,14 +2,14 @@ background-blur-radius = 0
 background-opacity = 0.83
 command = /bin/zsh -lc "~/.scripts/ghostty-starts-tmux.sh"
 confirm-close-surface = false
-font-family = "FantasqueSansM Nerd Font Mono"
-font-size = 12
+font-family = "IosevkaTerm Nerd Font Mono"
+font-size = 14
 keybind = global:option+space=toggle_quick_terminal
 macos-non-native-fullscreen = true
 window-decoration = none
 # macos-titlebar-style = hidden
 quick-terminal-animation-duration = 0
-quick-terminal-autohide = false
+quick-terminal-autohide = true
 quick-terminal-position = center
 quick-terminal-screen = macos-menu-bar
 scrollback-limit = 0
