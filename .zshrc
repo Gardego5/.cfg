@@ -18,6 +18,7 @@ RPROMPT='$(function () {
 })'
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias wiki="/usr/bin/git --git-dir=\$HOME/.wiki/ --work-tree=\"\$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Garrett's Stuff\""
 
 source <(fzf --zsh)
 autoload -Uz compinit && compinit

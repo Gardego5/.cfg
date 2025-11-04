@@ -1,5 +1,5 @@
 background-blur-radius = 0
-background-opacity = 0.83
+background-opacity = 0.95
 command = /bin/zsh -lc "~/.scripts/ghostty-starts-tmux.sh"
 confirm-close-surface = false
 font-family = "IosevkaTerm Nerd Font Mono"
