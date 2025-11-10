@@ -66,7 +66,8 @@ now(function()
 end)
 
 now_if_args(function()
-  require("mini.files").setup({
+  local MiniFiles = require("mini.files")
+  MiniFiles.setup({
     use_as_default_explorer = true,
 
     -- Customization of shown content
@@ -117,6 +118,25 @@ now_if_args(function()
 end)
 
 later(function()
+  local miniclue = require("mini.clue")
+  miniclue.setup({
+    triggers = {
+      { mode = "n", keys = "<Leader>" },
+      { mode = "x", keys = "<Leader>" },
+    },
+    clues = {
+      -- Enhance this by adding descriptions for <Leader> mapping groups
+      miniclue.gen_clues.builtin_completion(),
+      miniclue.gen_clues.g(),
+      miniclue.gen_clues.marks(),
+      miniclue.gen_clues.registers(),
+      miniclue.gen_clues.windows(),
+      miniclue.gen_clues.z(),
+    },
+  })
+end)
+
+later(function()
   local hipatterns = require("mini.hipatterns")
   hipatterns.setup({
     highlighters = {
@@ -132,10 +152,30 @@ later(function()
   })
 end)
 
+later(function()
+  local MiniIndentscope = require("mini.indentscope")
+  MiniIndentscope.setup({
+    draw = { animation = MiniIndentscope.gen_animation.none() },
+    symbol = "╎",
+    -- Module mappings. Use `''` (empty string) to disable one.
+    mappings = {
+      -- Textobjects
+      object_scope = "ii",
+      object_scope_with_border = "ai",
+
+      -- Motions (jump to respective border line; if not present - body line)
+      goto_top = "[i",
+      goto_bottom = "]i",
+    },
+    options = { try_as_border = true },
+  })
+end)
+
 now(function()
   require("mini.statusline").setup()
   require("mini.icons").setup()
 end)
+
 later(function()
   require("mini.cursorword").setup({ delay = 100 })
   require("mini.diff").setup({
@@ -151,7 +191,10 @@ later(function()
 end)
 
 later(function()
-  require("mini.pick").setup({
+  MiniPick = require("mini.pick")
+  MiniExtra = require("mini.extra")
+
+  MiniPick.setup({
     -- Delays (in ms; should be at least 1)
     delay = {
       -- Delay between forcing asynchronous behavior
@@ -236,8 +279,10 @@ later(function()
     },
   })
 
-  local builtin = MiniPick.builtin
-  vim.keymap.set("n", "<leader>ff", builtin.files, { desc = "[F]ind [F]iles" })
-  vim.keymap.set("n", "<leader>fg", builtin.grep_live, { desc = "[F]ind [G]rep" })
-  vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "[F]ind [B]uffers" })
+  vim.keymap.set("n", "<leader>ff", MiniPick.builtin.files, { desc = "[F]ind [F]iles" })
+  vim.keymap.set("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "[F]ind [G]rep" })
+  vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "[F]ind [B]uffers" })
+  vim.keymap.set("n", "<leader>fq", function()
+    MiniExtra.pickers.list({ scope = "quickfix" })
+  end, { desc = "[F]ind [Q]uickfix" })
 end)

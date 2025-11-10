@@ -17,7 +17,10 @@ require("mini.deps").setup({ path = { package = _G.Config.path_package } })
 
 local group = vim.api.nvim_create_augroup("custom-config", {})
 _G.Config.new_autocmd = function(event, pattern, callback, desc)
-  local opts = { group = group, pattern = pattern, callback = callback, desc = desc }
+  local opts = { group = group, callback = callback, desc = desc }
+  if pattern ~= nil then
+    opts.pattern = pattern
+  end
   return vim.api.nvim_create_autocmd(event, opts)
 end
 

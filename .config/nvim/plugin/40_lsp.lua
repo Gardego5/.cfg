@@ -1,4 +1,6 @@
 local MiniDeps = require("mini.deps")
+local MiniExtra = require("mini.extra")
+local MiniPick = require("mini.pick")
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 local new_autocmd = _G.Config.new_autocmd
 
@@ -22,52 +24,43 @@ now(function()
   add({
     source = "nvim-treesitter/nvim-treesitter",
     checkout = "main",
-    hooks = {
-      post_checkout = function()
-        vim.cmd("TSUpdate")
-      end,
-    },
+    -- hooks = {
+    --   post_checkout = function()
+    --     vim.cmd("TSUpdate")
+    --   end,
+    -- },
   })
-  add({ source = "nvim-treesitter/nvim-treesitter-textobjects", checkout = "main" })
+  -- add({ source = "nvim-treesitter/nvim-treesitter-textobjects", checkout = "main" })
 
-  local languages = {
-    "bash",
-    "c",
-    "diff",
+  -- local enabled_if_not_too_big = {
+  --   enable = true,
+  --   disable = function(lang, buf)
+  --     local max_filesize = 30 * 1024 -- 30 KB
+  --     local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+  --     if ok and stats and stats.size > max_filesize then
+  --       return true
+  --     end
+  --   end,
+  -- }
+
+  local nvim_treesitter = require("nvim-treesitter")
+
+  nvim_treesitter.setup({
+    -- Directory to install parsers and queries to
+    install_dir = vim.fn.stdpath("data") .. "/site",
+  })
+  nvim_treesitter.install({
     "go",
-    "html",
-    "lua",
-    "luadoc",
-    "markdown",
-    "markdown_inline",
-    "query",
-    "vim",
-    "sql",
-    "vimdoc",
-    "yaml",
-  }
-
-  require("nvim-treesitter").setup({
-    ensure_installed = languages,
-    auto_install = true,
-    highlight = {
-      enable = true,
-    },
-    indent = {
-      enable = true,
-    },
   })
 
-  -- Enable tree-sitter after opening a file for a target language
-  local filetypes = {}
-  for _, lang in ipairs(languages) do
-    for _, ft in ipairs(vim.treesitter.language.get_filetypes(lang)) do
-      table.insert(filetypes, ft)
-    end
-  end
-  new_autocmd("FileType", filetypes, function(ev)
-    vim.treesitter.start(ev.buf)
-  end, "Start tree-sitter")
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "<filetype>" },
+    callback = function()
+      vim.treesitter.start()
+    end,
+  })
+  vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+  vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 end)
 
 later(function()
@@ -96,13 +89,12 @@ later(function()
   conform.setup({
     formatters_by_ft = {
       go = { "goimports", "gofmt" },
-      hcl = { "terraform fmt" },
+      hcl = { "terraform" },
       javascript = { "prettierd", "prettier", stop_after_first = true },
       json = { "jq" },
       lua = { "stylua" },
       python = { "isort", "black" },
       rust = { "rustfmt", lsp_format = "fallback" },
-      sql = { "sqruff" },
       templ = { "templ" },
       yaml = { "yq" },
     },
@@ -115,7 +107,11 @@ later(function()
     end
   end, "Format on idle.")
 
-  -- require("mason-conform").setup()
+  require("mason-conform").setup({
+    -- this ignores noisy errors due to `stop_after_first` and other incompatible
+    -- options set for conform above.
+    quiet_mode = true,
+  })
   require("mason-lspconfig").setup({
     ensure_installed = lsp_servers,
     automatic_installation = true,
@@ -138,12 +134,25 @@ later(function()
     },
   })
 
-  new_autocmd("CursorHold", "*", vim.lsp.buf.document_highlight, "Document Highlight")
-  new_autocmd("CursorHoldI", "*", vim.lsp.buf.document_highlight, "Document Highlight")
-  new_autocmd("CursorMoved", "*", vim.lsp.buf.clear_references, "Clear Document Highlight")
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-  vim.keymap.set({ "n" }, "<leader>gD", vim.lsp.buf.declaration, { desc = "[G]o to [D]eclaration" })
-  vim.keymap.set({ "n" }, "<leader>gd", vim.lsp.buf.definition, { desc = "[G]o to [D]efinition" })
+  -- this sets up highlighting of _lsp_ references when the cursor holds on an
+  -- item.... but it should be registered only when an active lsp supports
+  -- document highlight
+  -- new_autocmd("CursorHold", "*", vim.lsp.buf.document_highlight, "Document Highlight")
+  -- new_autocmd("CursorHoldI", "*", vim.lsp.buf.document_highlight, "Document Highlight")
+  -- new_autocmd("CursorMoved", "*", vim.lsp.buf.clear_references, "Clear Document Highlight")
+
+  local group = vim.api.nvim_create_augroup("GD-LSPActions", { clear = true })
+  local function pick_lsp(scope)
+    return function(ev)
+      MiniExtra.pickers.lsp({ scope = scope })
+    end
+  end
+  vim.keymap.set({ "n" }, "<leader>gD", pick_lsp("declaration"), { desc = "[G]o to [D]eclaration" })
+  vim.keymap.set({ "n" }, "<leader>gd", pick_lsp("definition"), { desc = "[G]o to [D]efinition" })
+  vim.keymap.set({ "n" }, "<leader>gi", pick_lsp("implementation"), { desc = "[G]o to [I]mplementation" })
+  vim.keymap.set({ "n" }, "<leader>gr", pick_lsp("references"), { desc = "[G]o to [R]eferences" })
   vim.keymap.set({ "n" }, "<leader>cf", conform.format, { desc = "[C]ode [F]ormat buffer" })
   vim.keymap.set({ "n" }, "<leader>cr", function()
     -- when renaming things... open them in a cmdline window, instead of just a
