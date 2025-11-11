@@ -24,43 +24,58 @@ now(function()
   add({
     source = "nvim-treesitter/nvim-treesitter",
     checkout = "main",
-    -- hooks = {
-    --   post_checkout = function()
-    --     vim.cmd("TSUpdate")
-    --   end,
-    -- },
+    hooks = {
+      post_checkout = function()
+        vim.cmd("TSUpdate")
+      end,
+    },
   })
-  -- add({ source = "nvim-treesitter/nvim-treesitter-textobjects", checkout = "main" })
 
-  -- local enabled_if_not_too_big = {
-  --   enable = true,
-  --   disable = function(lang, buf)
-  --     local max_filesize = 30 * 1024 -- 30 KB
-  --     local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-  --     if ok and stats and stats.size > max_filesize then
-  --       return true
-  --     end
-  --   end,
-  -- }
-
-  local nvim_treesitter = require("nvim-treesitter")
-
-  nvim_treesitter.setup({
-    -- Directory to install parsers and queries to
-    install_dir = vim.fn.stdpath("data") .. "/site",
+  -- Configure nvim-treesitter for main branch
+  local ts = require("nvim-treesitter")
+  
+  -- Setup with parser install directory
+  ts.setup({
+    parser_install_dir = vim.fn.stdpath("data") .. "/site",
   })
-  nvim_treesitter.install({
+  
+  -- Install commonly used parsers
+  ts.install({
+    "bash",
+    "c",
+    "diff",
     "go",
+    "html",
+    "javascript",
+    "json",
+    "lua",
+    "markdown",
+    "markdown_inline",
+    "python",
+    "query",
+    "rust",
+    "terraform",
+    "vim",
+    "vimdoc",
+    "yaml",
   })
-
+  
+  -- Auto-install parsers and start highlighting for any filetype
   vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "<filetype>" },
     callback = function()
-      vim.treesitter.start()
+      local ft = vim.bo.filetype
+      if ft ~= "" then
+        -- Try to install parser for this filetype if not already installed
+        pcall(ts.install, { ft })
+        -- Start treesitter highlighting
+        vim.treesitter.start()
+      end
     end,
   })
+  
+  -- Enable treesitter-based folding
   vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-  vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  vim.wo.foldmethod = "expr"
 end)
 
 later(function()
