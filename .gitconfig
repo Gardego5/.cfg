@@ -7,3 +7,5 @@
 	helper = osxkeychain
 [credential "https://github.com"]
 	username = Gardego5
+; [credential "https://git.garrettdavis.dev"]
+; 	username = Gardego5

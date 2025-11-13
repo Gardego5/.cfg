@@ -279,6 +279,7 @@ later(function()
     },
   })
 
+  vim.keymap.set("n", "<leader>f<space>", MiniPick.builtin.resume, { desc = "[F]ind [R]esume" })
   vim.keymap.set("n", "<leader>ff", MiniPick.builtin.files, { desc = "[F]ind [F]iles" })
   vim.keymap.set("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "[F]ind [G]rep" })
   vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "[F]ind [B]uffers" })

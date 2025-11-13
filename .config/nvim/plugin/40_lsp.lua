@@ -14,6 +14,7 @@ local lsp_servers = {
   "html",
   "rust_analyzer",
   "lua_ls",
+  "ts_ls",
 }
 
 now(function()
@@ -51,16 +52,31 @@ now(function()
   })
   nvim_treesitter.install({
     "go",
+    "yaml",
+    "plsql",
   })
 
+  -- highlighting
   vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "<filetype>" },
-    callback = function()
-      vim.treesitter.start()
+    callback = function(ev)
+      local parser = vim.treesitter.get_parser(ev.buf, nil, { error = false })
+      if parser ~= nil then
+        vim.treesitter.start()
+      end
     end,
   })
-  vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+
+  -- indentation
   vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
+  -- folding
+  vim.wo.foldmethod = "expr"
+  vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+  vim.api.nvim_create_autocmd({ "BufReadPost", "FileReadPost" }, {
+    callback = function(ev)
+      vim.cmd("normal zR") -- open all folds
+    end,
+  })
 end)
 
 later(function()
