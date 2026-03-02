@@ -19,6 +19,7 @@ local lsp_servers = {
 
 now(function()
   add({ source = "tpope/vim-sleuth" })
+  -- add({ source = "numToStr/Comment.nvim" })
 end)
 
 now(function()
@@ -53,7 +54,7 @@ now(function()
   nvim_treesitter.install({
     "go",
     "yaml",
-    "plsql",
+    --"plsql",
   })
 
   -- highlighting
@@ -137,7 +138,12 @@ later(function()
     cmdline = { sources = { "cmdline" } },
     signature = { enabled = true },
     sources = {
-      default = { "copilot", "lsp", "path", "codecompanion" },
+      default = {
+        "copilot",
+        "lsp",
+        "path",
+        "codecompanion",
+      },
       providers = {
         codecompanion = { module = "codecompanion.providers.completion.blink" },
         copilot = {
@@ -180,6 +186,7 @@ later(function()
       vim.api.nvim_feedkeys(ctrl_f, "c", false)
       vim.api.nvim_feedkeys("0", "n", false)
       cmd_id = nil -- autocmd was triggered and so we can remove the ID and return true to delete the autocmd
+      return true
     end
     local function clear_cmd_id()
       if cmd_id then

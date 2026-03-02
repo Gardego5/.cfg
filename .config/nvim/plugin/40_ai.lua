@@ -20,31 +20,7 @@ later(function()
     depends = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      -- {
-      --   source = "Davidyz/VectorCode",
-      --   hooks = {
-      --     post_checkout = function()
-      --       local command = { "uv", "tool", "upgrade", "vectorcode" }
-      --       local output = vim.fn.system(command)
-      --       local bufnr = vim.api.nvim_create_buf(false, true)
-      --
-      --       -- Set buffer options using vim.bo[bufnr]
-      --       vim.api.nvim_buf_set_name(bufnr, "VectorCode_Build_Log")
-      --       vim.bo[bufnr].buftype = "nofile" -- Not associated with a file
-      --       vim.bo[bufnr].bufhidden = "wipe" -- Close on hide
-      --       vim.bo[bufnr].swapfile = false -- No swap file
-      --       vim.bo[bufnr].modifiable = false -- Make it read-only
-      --       vim.bo[bufnr].readonly = true -- Make it read-only
-      --
-      --       local lines = vim.split(output, "\n", { plain = true })
-      --       vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-      --
-      --       -- Open the new buffer in a split window
-      --       vim.cmd("split")
-      --       vim.api.nvim_win_set_buf(0, bufnr) -- 0 refers to the current window
-      --     end,
-      --   },
-      -- },
+      "franco-ruggeri/codecompanion-spinner.nvim",
     },
   })
 
@@ -76,7 +52,9 @@ later(function()
         fold_context = true,
       },
     },
-    extensions = {},
+    extensions = {
+      spinner = {},
+    },
   })
 
   vim.keymap.set({ "n" }, "<leader>cc", "<CMD>CodeCompanionChat<CR>", {

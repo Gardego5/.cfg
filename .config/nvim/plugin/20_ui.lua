@@ -1,3 +1,4 @@
+local MiniDeps = require("mini.deps")
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 local now_if_args = _G.Config.now_if_args
 
@@ -118,6 +119,11 @@ now_if_args(function()
 end)
 
 later(function()
+  local minigit = require("mini.git")
+  minigit.setup({})
+end)
+
+later(function()
   local miniclue = require("mini.clue")
   miniclue.setup({
     triggers = {
@@ -177,8 +183,10 @@ now(function()
 end)
 
 later(function()
+  require("mini.comment").setup()
   require("mini.cursorword").setup({ delay = 100 })
-  require("mini.diff").setup({
+  local minidiff = require("mini.diff")
+  minidiff.setup({
     view = {
       style = "sign",
       signs = {
@@ -188,6 +196,10 @@ later(function()
       },
     },
   })
+
+  vim.keymap.set("n", "<leader>td", function()
+    minidiff.toggle_overlay()
+  end, { desc = "[T]oggle [D]iff" })
 end)
 
 later(function()
@@ -286,4 +298,14 @@ later(function()
   vim.keymap.set("n", "<leader>fq", function()
     MiniExtra.pickers.list({ scope = "quickfix" })
   end, { desc = "[F]ind [Q]uickfix" })
+end)
+
+later(function()
+  add({
+    source = "kristijanhusak/vim-dadbod-ui",
+    depends = {
+      { source = "tpope/vim-dadbod" },
+      -- { source = "kristijanhusak/vim-dadbod-completion" },
+    },
+  })
 end)
